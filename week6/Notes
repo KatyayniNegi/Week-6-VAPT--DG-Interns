@@ -1,0 +1,159 @@
+# 🛡️ Week 6: Web Security & Vulnerability Testing (VAPT Basics)
+
+## 📌 Project Overview
+
+* **Internship Program:** DG Interns Hub — Cyber Security Internship
+
+
+* **Prepared By:** Katyayni Negi
+
+
+* **Submission Date:** 14th October 2026
+
+
+* **Objective:** Understand common web application vulnerabilities, configure industry-standard VAPT tools, and perform manual and automated vulnerability testing in a controlled lab environment.
+
+
+
+---
+
+## 🛠️ Task 1: Study Notes — OWASP Top 10
+
+### 1. SQL Injection (SQLi)
+
+* **Definition:** A code injection technique where malicious SQL statements are inserted into entry fields (such as login forms or search boxes) for execution by the backend database.
+
+
+* **Mechanism:** Occurs when user-supplied input is concatenated directly into a SQL query without proper validation, sanitisation, or parameterised queries.
+
+
+* **Impact:** Unauthorised access to sensitive data, authentication bypass, data modification or deletion, and potential full server compromise.
+
+
+* **Mitigation:** Use parameterised queries/prepared statements, apply strict input validation, use ORM frameworks, and deploy a Web Application Firewall (WAF).
+
+
+
+### 2. Cross-Site Scripting (XSS)
+
+* **Definition:** A client-side injection vulnerability where an attacker injects malicious JavaScript into web pages viewed by other users.
+
+
+* **Types:**
+* **Reflected XSS:** The malicious script is included in the request (e.g., URL parameter) and immediately reflected back in the response.
+
+
+* **Stored XSS:** The malicious script is permanently stored on the target server (e.g., in a guestbook or database field) and served to every user viewing the page.
+
+
+* **DOM-based XSS:** Vulnerability exists in client-side JavaScript that writes attacker-controlled data into the DOM without sanitisation.
+
+
+
+
+* **Mitigation:** Context-aware output encoding/escaping, implementing a strict Content Security Policy (CSP), and setting `HttpOnly` and `Secure` flags on cookies.
+
+
+
+### 3. Broken Authentication
+
+* **Definition:** Flaws in mechanisms used to verify user identity and manage sessions, allowing attackers to compromise passwords or session tokens.
+
+
+* **Common Weaknesses:** Weak or default passwords, lack of rate-limiting/brute-force protection, session IDs exposed in URLs, and missing multi-factor authentication (MFA).
+
+
+* **Mitigation:** Enforce strong password policies, implement account lockouts/rate-limiting/CAPTCHAs, use secure session identifiers, and properly invalidate sessions on logout.
+
+
+
+### 4. Security Misconfiguration
+
+* **Definition:** Arises when systems, frameworks, servers, or applications are deployed with insecure default settings, verbose error messages, or missing security headers.
+
+
+* **Common Examples:** Default credentials left unchanged, directory listing enabled, verbose error messages revealing stack traces, and missing security headers (`X-Frame-Options`, `CSP`).
+
+
+* **Mitigation:** Harden configurations before deployment, disable directory listing, suppress detailed error messages in production, and apply recommended HTTP security headers.
+
+
+
+---
+
+## 🧰 Task 2: Tools Setup & Configuration
+
+* **Burp Suite (Community Edition):** Integrated proxy tool used to intercept, view, modify, and replay traffic between the browser and target application.
+
+
+* **OWASP ZAP:** Free open-source Dynamic Application Security Testing (DAST) tool used for automated spidering and active vulnerability scanning.
+
+
+* **DVWA (Damn Vulnerable Web Application):** Deliberately vulnerable PHP/MySQL application hosted locally via XAMPP with security set to **Low** for initial exploratory testing.
+
+
+
+---
+
+## 🔬 Task 3 & 4: Testing Process & Execution
+
+### 1. SQL Injection Testing (DVWA)
+
+* **Payload Used:** `1' OR '1'='1`
+
+* **Observation:** Bypassed standard filters and returned details for all users in the database.
+
+
+* **Burp Suite Interception:** Captured the GET request containing encoded parameters and replayed it via Repeater to analyze server response.
+
+
+
+### 2. Reflected XSS Testing (DVWA)
+
+* **Payload Used:** `<script>alert('XSS Test')</script>`
+
+* **Observation:** Input was immediately reflected in the HTTP response and executed an alert box in the browser.
+
+
+
+### 3. Stored XSS Testing (DVWA)
+
+* **Payload Used:** `<script>alert('Stored XSS')</script>`
+
+* **Observation:** Submitted via the Guestbook module; persistent storage caused the script to execute automatically upon page reload for all visitors.
+
+
+
+### 4. Automated Scanning (OWASP ZAP)
+
+* **Process:** Ran a traditional spider crawl followed by an Active Scan on `http://localhost:8080/`.
+
+
+* **Findings:** Identified High-risk SQLi and Reflected XSS vectors, missing Anti-CSRF tokens, missing clickjacking headers, and server version disclosures (`Apache/2.4.25`).
+
+
+
+---
+
+## 📊 Summary of Findings & Risk Levels
+
+| # | Vulnerability | Location / Module | Risk Level | CVSS (Approx.) |
+| --- | --- | --- | --- | --- |
+| 1 | **SQL Injection** | DVWA - SQL Injection Module | Critical | 9.8
+
+ |
+| 2 | **Reflected XSS** | DVWA - XSS Reflected Module | High | 7.2
+
+ |
+| 3 | **Stored XSS** | DVWA - XSS Stored (Guestbook) | High | 8.0
+
+ |
+| 4 | **Broken Authentication** | DVWA - Login / Brute Force | High | 7.5
+
+ |
+| 5 | **Security Misconfiguration** | DVWA - Server Headers | Medium | 5.8
+
+ |
+| 6 | **SQL Injection** (Bonus) | `testphp.vulnweb.com` | Critical | 9.4
+
+ |
